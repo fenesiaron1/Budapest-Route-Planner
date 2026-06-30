@@ -14,6 +14,8 @@ import { Icon, Style } from 'ol/style';
 import LineString from 'ol/geom/LineString.js';
 import Stroke from 'ol/style/Stroke.js';
 
+const BudapestCenter = fromLonLat([19.040235, 47.497912]);
+
 const map = new Map({
   target: 'map',
   layers: [
@@ -25,7 +27,7 @@ const map = new Map({
         doubleClickZoom: false
     }),
   view: new View({
-    center: fromLonLat([19.040235, 47.497912]),
+    center: BudapestCenter,
     zoom: 12
   })
 });
@@ -57,7 +59,6 @@ const routeStyle = new Style({
   })
 });
 
-
 map.addLayer(markerLayer);
 map.addLayer(routeLayer);
 
@@ -84,22 +85,26 @@ async function drawRoute(startMarker, endMarker) {
   const startCoord = toLonLat(startMarker.getGeometry().getCoordinates());
   const endCoord = toLonLat(endMarker.getGeometry().getCoordinates());
 
-  const url = `https://router.project-osrm.org/route/v1/walking/` +
+  const url = `https://router.project-osrm.org/route/v1/foot/` +
   `${startCoord[0]},${startCoord[1]};${endCoord[0]},${endCoord[1]}` +
   `?overview=full&geometries=geojson`;
-
   
-  const response = await fetch(url);
-  const data = await response.json();
+  try
+  {
+    const response = await fetch(url);
+    const data = await response.json();
 
-
-  console.log(data);
-  
-  const route = new Feature({
-    geometry: new LineString(data.routes[0].geometry.coordinates.map(coord => fromLonLat(coord)))
-  });
-  route.setStyle(routeStyle);
-  routeLayer.getSource().addFeature(route);
+    console.log(data);
+    
+    const route = new Feature({
+      geometry: new LineString(data.routes[0].geometry.coordinates.map(coord => fromLonLat(coord)))
+    });
+    route.setStyle(routeStyle);
+    routeLayer.getSource().addFeature(route);
+  }
+  catch (error) {
+    console.error('Error drawing route:', error);
+  }
 }
 
 map.on('click', function (event) {
