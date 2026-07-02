@@ -1,5 +1,4 @@
 @import "node_modules/ol/ol.css";
-
 html, body {
   margin: 0;
   height: 100%;
@@ -9,4 +8,38 @@ html, body {
   top: 0;
   bottom: 0;
   width: 100%;
+}
+
+#controls, #panel {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 10px);
+  width: max-content;
+  max-width: 90%;
+  z-index: 1;
+  background: white;
+  box-shadow: 0 0 6px rgba(0,0,0,0.3);
+  border-radius: 6px;
+  padding: 0.6em 1em;
+  display: flex;
+  gap: 1em;
+  flex-wrap: wrap;
+  align-items: center;
+
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+}
+
+#controls {
+  bottom: 10px;
+}
+#panel {
+  bottom: 60px;
+}
+
+#controls.visible, #panel.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
 }

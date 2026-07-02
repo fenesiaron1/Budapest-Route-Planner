@@ -8,6 +8,25 @@
   </head>
   <body>
     <div id="map"></div>
+
+    <div id="controls">
+      <button id="planBtn">Plan route</button>
+      <button id="clearBtn">Clear</button>
+    </div>
+
+    <div id="panel">
+      <div>Start: <span id="startCoord"></span></div>
+      <div>End: <span id="endCoord"></span></div>
+      <div>Distance: <span id="distance"></span></div>
+      <div>Time: <span id="duration"></span></div>
+      <select id="profile">
+        <option value="walking">Walking</option>
+        <option value="driving">Driving</option>
+        <option value="cycling">Cycling</option>
+        <option value="transit" disabled>Public transport (soon)</option>
+      </select>
+    </div>
+
     <script type="module" src="./main.js"></script>
   </body>
 </html>
