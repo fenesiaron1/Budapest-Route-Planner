@@ -27,22 +27,41 @@ const map = new Map({
     zoom: 12
   })
 });
+
 const markerLayer = new VectorLayer({
     source: new VectorSource({
-        features: []
+        features: [],
     })
 });
+markerLayer.setZIndex(20);
+
 const routeLayer = new VectorLayer({
     source: new VectorSource({
         features: []
     })
 });
+
+const geolocLayer = new VectorLayer({
+    source: new VectorSource({
+        features: [],
+    })
+});
+geolocLayer.setZIndex(10);
+
+const geolocStyle = new Style({
+  image: new Icon({
+    src: 'geoloc.png',
+    anchor: [0.5, 1],
+    scale: 0.04
+  }),
+});
+
 const markerStyle = new Style({
   image: new Icon({
     src: 'marker.png',
     anchor: [0.5, 1],
     scale: 0.03
-  })
+  }),
 });
     
 const routeStyle = new Style({
@@ -51,8 +70,43 @@ const routeStyle = new Style({
     width: 4
   })
 });
+
 map.addLayer(markerLayer);
 map.addLayer(routeLayer);
+map.addLayer(geolocLayer);
+
+var geolocMarker = null;
+
+
+function getGeolocation() {
+  navigator.geolocation.getCurrentPosition(position => {
+    const coords = [position.coords.longitude, position.coords.latitude];
+    geolocMarker = new Feature({
+      geometry: new Point(fromLonLat(coords)),
+      zIndex: 1
+    });
+    geolocMarker.setStyle(geolocStyle);
+    geolocLayer.getSource().addFeature(geolocMarker);
+    
+  }, 
+    error => {
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+        alert("No permission for Geolocation.");
+        break;
+      default:
+        alert("Geolocation error");
+    }
+  });
+}
+getGeolocation();
+
+const permission = await navigator.permissions.query({
+    name: 'geolocation'
+});
+
+permission.onchange = () => getGeolocation();
+
 var currentSelectedMarker1 = null;
 var currentSelectedMarker2 = null;
 
@@ -79,14 +133,17 @@ function resetMarkers() {
   routeLayer.getSource().clear();
   updateUI();
 }
-function addMarker(event) {
+
+function addMarker(coord) {
   const marker = new Feature({
-    geometry: new Point(event.coordinate)
+    geometry: new Point(coord),
+    zIndex: 2
   });
   marker.setStyle(markerStyle);
   markerLayer.getSource().addFeature(marker);
   return marker;
 }
+
 async function drawRoute(startMarker, endMarker, profile = 'walking') {
   const startCoord = toLonLat(startMarker.getGeometry().getCoordinates());
   const endCoord = toLonLat(endMarker.getGeometry().getCoordinates());
@@ -114,17 +171,31 @@ async function drawRoute(startMarker, endMarker, profile = 'walking') {
 
 map.on('click', function (event) {
     console.log(toLonLat(event.coordinate));
-    if(currentSelectedMarker1 === null) currentSelectedMarker1 = addMarker(event);
-    else if(currentSelectedMarker2 === null) currentSelectedMarker2 = addMarker(event);
+
+    if(map.getFeaturesAtPixel(event.pixel).some(feature => feature === geolocMarker)) {
+      resetMarkers();
+      currentSelectedMarker1 = addMarker(geolocMarker.getGeometry().getCoordinates());
+      updateUI();
+      return;
+    }
+
+    if(currentSelectedMarker1 === null) currentSelectedMarker1 = addMarker(event.coordinate);
+    else if(currentSelectedMarker2 === null) currentSelectedMarker2 = addMarker(event.coordinate);
     else resetMarkers();
     updateUI();
 });
+
+map.on('pointermove', function (event) {
+    map.getTargetElement().style.cursor = map.getFeaturesAtPixel(event.pixel).some(feature => feature === geolocMarker) ? 'pointer' : '';
+});
+
 document.addEventListener('keydown', function (event) {
   console.log(event.key);
   if (event.key === 'Escape') {
     resetMarkers();
   }
 });
+
 document.addEventListener('keydown', function (event) {
   console.log(event.key);
   if (event.key === 'r') {
