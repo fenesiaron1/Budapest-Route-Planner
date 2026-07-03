@@ -31,15 +31,44 @@ html, body {
   transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
 }
 
+#controls button {
+  font-size: 1em;  
+  padding: 0.5em 1em;
+}
+
 #controls {
   bottom: 10px;
 }
 #panel {
-  bottom: 60px;
+  bottom: 70px;
 }
 
 #controls.visible, #panel.visible {
   opacity: 1;
   visibility: visible;
   transform: translate(-50%, 0);
+}
+
+@media (max-width: 600px) {
+  #controls, #panel {
+    font-size: 1.15em;
+    padding: 0.8em 1.2em;
+    gap: 1.2em;
+  }
+
+  #controls button,
+  #panel select {
+    font-size: 1.1em;
+    padding: 0.5em 1em;
+  }
+
+  #controls {
+    bottom: 20px;
+  }
+
+  #panel {
+    bottom: 100px;
+  }
+
+
 }
