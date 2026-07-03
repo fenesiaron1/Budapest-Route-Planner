@@ -48,7 +48,7 @@ geolocLayer.setZIndex(10);
 
 export const geolocStyle = new Style({
   image: new Icon({
-    src: 'geoloc.png',
+    src: 'src/geoloc.png',
     anchor: [0.5, 1],
     scale: 0.04
   }),
@@ -56,7 +56,7 @@ export const geolocStyle = new Style({
 
 export const markerStyle = new Style({
   image: new Icon({
-    src: 'marker.png',
+    src: 'src/marker.png',
     anchor: [0.5, 1],
     scale: 0.03
   }),
