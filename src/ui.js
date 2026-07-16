@@ -52,8 +52,6 @@ routingEvents.addEventListener('routecalculated', (event) => {
 });
 
 map.on('click', function (event) {
-    console.log(toLonLat(event.coordinate));
-
     if(map.getFeaturesAtPixel(event.pixel).some(feature => feature === geolocMarker)) {
       resetMarkers();
       currentSelectedMarker1 = addMarker(geolocMarker.getGeometry().getCoordinates());
@@ -72,18 +70,15 @@ map.on('pointermove', function (event) {
 });
 
 document.addEventListener('keydown', function (event) {
-  console.log(event.key);
   if (event.key === 'Escape') {
     resetMarkers();
   }
 });
 
 document.addEventListener('keydown', function (event) {
-  console.log(event.key);
   if (event.key === 'r') {
     if (currentSelectedMarker1 !== null && currentSelectedMarker2 !== null && routeLayer.getSource().getFeatures().length === 0) {
       drawRoute(currentSelectedMarker1, currentSelectedMarker2, profileSelect.value);
-      console.log("Route drawn");
     }
   }
 });

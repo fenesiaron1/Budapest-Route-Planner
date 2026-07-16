@@ -14,7 +14,6 @@ export async function drawRoute(startMarker, endMarker, profile = 'walking') {
   
   const response = await fetch(url);
   const data = await response.json();
-  console.log(data);
   
   routeLayer.getSource().clear();
   const route = new Feature({
