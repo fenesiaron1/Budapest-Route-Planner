@@ -51,6 +51,12 @@ routingEvents.addEventListener('routecalculated', (event) => {
     panelEl.classList.add('visible');
 });
 
+routingEvents.addEventListener('routecalculationerror', () => {
+    alert("Error calculating route");
+    resetMarkers();
+    updateUI();
+});
+
 map.on('click', function (event) {
     if(map.getFeaturesAtPixel(event.pixel).some(feature => feature === geolocMarker)) {
       resetMarkers();

@@ -12,21 +12,26 @@ export async function drawRoute(startMarker, endMarker, profile = 'walking') {
   `${startCoord[0]},${startCoord[1]};${endCoord[0]},${endCoord[1]}` +
   `?overview=full&geometries=geojson`;
   
-  const response = await fetch(url);
-  const data = await response.json();
-  
-  routeLayer.getSource().clear();
-  const route = new Feature({
-    geometry: new LineString(data.routes[0].geometry.coordinates.map(coord => fromLonLat(coord)))
-  });
-  route.setStyle(routeStyle);
-  routeLayer.getSource().addFeature(route);
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    routeLayer.getSource().clear();
+    const route = new Feature({
+      geometry: new LineString(data.routes[0].geometry.coordinates.map(coord => fromLonLat(coord)))
+    });
+    route.setStyle(routeStyle);
+    routeLayer.getSource().addFeature(route);
 
-  routingEvents.dispatchEvent(new CustomEvent('routecalculated', {
-    detail: {
-      startCoord,
-      endCoord,
-      data
-    }
-  }));
+    routingEvents.dispatchEvent(new CustomEvent('routecalculated', {
+      detail: {
+        startCoord,
+        endCoord,
+        data
+      }
+    }));
+  } catch (error) {
+    alert("Error calculating route");
+    routingeEvents.dispatchEvent(new CustomEvent('routecalculationerror'));
+  }
 }
