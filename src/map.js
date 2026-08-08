@@ -46,6 +46,13 @@ export const geolocLayer = new VectorLayer({
 });
 geolocLayer.setZIndex(10);
 
+export const savedLayer = new VectorLayer({
+    source: new VectorSource({
+        features: [],
+    })
+});
+savedLayer.setZIndex(15);
+
 export const geolocStyle = new Style({
   image: new Icon({
     src: 'src/geoloc.png',
@@ -61,7 +68,39 @@ export const markerStyle = new Style({
     scale: 0.03
   }),
 });
-    
+
+export const homeStyle = new Style({
+  image: new Icon({
+    src: 'src/home.png',
+    anchor: [0.5, 1],
+    scale: 0.1
+  }),
+});
+
+export const workplaceStyle = new Style({
+  image: new Icon({
+    src: 'src/workplace.png',
+    anchor: [0.5, 1],
+    scale: 0.086
+  }),
+});
+
+export const studyStyle = new Style({
+  image: new Icon({
+    src: 'src/study.png',
+    anchor: [0.5, 1],
+    scale: 0.075
+  }),
+});
+
+export const favoriteStyle = new Style({
+  image: new Icon({
+    src: 'src/favorite.png',
+    anchor: [0.5, 1],
+    scale: 0.086
+  }),
+});
+
 export const routeStyle = new Style({
   stroke: new Stroke({
     color: 'red',
@@ -72,6 +111,7 @@ export const routeStyle = new Style({
 map.addLayer(markerLayer);
 map.addLayer(routeLayer);
 map.addLayer(geolocLayer);
+map.addLayer(savedLayer);
 
 export function addMarker(coord) {
   const marker = new Feature({
@@ -82,3 +122,67 @@ export function addMarker(coord) {
   markerLayer.getSource().addFeature(marker);
   return marker;
 }
+
+function getStyleForType(type) {
+  if (type === 'home') return homeStyle;
+  if (type === 'workplace') return workplaceStyle;
+  if (type === 'study') return studyStyle;
+  if (type === 'favorite') return favoriteStyle;
+  return markerStyle;
+}
+
+const SAVED_STORAGE_KEY = 'savedLocations';
+ 
+function persistSavedMarkers() {
+  const data = {};
+  savedLayer.getSource().getFeatures().forEach(feature => {
+    data[feature.get('type')] = toLonLat(feature.getGeometry().getCoordinates());
+  });
+  try {
+    localStorage.setItem(SAVED_STORAGE_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.error('Failed to save locations', e);
+  }
+}
+
+export function loadSavedMarkers() {
+  try {
+    const raw = localStorage.getItem(SAVED_STORAGE_KEY);
+    const data = JSON.parse(raw);
+    Object.entries(data).forEach(([type, lonLat]) => {
+      const marker = new Feature({
+        geometry: new Point(fromLonLat(lonLat)),
+        zIndex: 1
+      });
+      marker.set('type', type);
+      marker.setStyle(getStyleForType(type));
+      savedLayer.getSource().addFeature(marker);
+    });
+  } catch (e) {
+    console.error('Failed to load saved locations', e);
+  }
+}
+
+export function getSavedMarker(type) {
+  return savedLayer.getSource().getFeatures().find(f => f.get('type') === type);
+}
+
+export function setSavedMarker(type, coord) {
+  removeSavedMarker(type);
+  const marker = new Feature({
+    geometry: new Point(coord),
+    zIndex: 1
+  });
+  marker.set('type', type);
+  marker.setStyle(getStyleForType(type));
+  savedLayer.getSource().addFeature(marker);
+  persistSavedMarkers();
+  return marker;
+}
+
+export function removeSavedMarker(type) {
+  const existing = getSavedMarker(type);
+  if (existing) savedLayer.getSource().removeFeature(existing);
+  persistSavedMarkers();
+}
+
