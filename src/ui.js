@@ -11,7 +11,7 @@ import VectorSource from 'ol/source/Vector';
 import { Icon, Style } from 'ol/style';
 import LineString from 'ol/geom/LineString.js';
 import Stroke from 'ol/style/Stroke.js';
-import { map, markerLayer, routeLayer, geolocLayer, geolocStyle, markerStyle, routeStyle, addMarker, savedLayer, getSavedMarker, setSavedMarker, removeSavedMarker, loadSavedMarkers } from './map.js';
+import { map, markerLayer, routeLayer, geolocLayer, geolocStyle, markerStyle, routeStyle, addMarker, savedLayer, stationsLayer, getSavedMarker, setSavedMarker, removeSavedMarker, loadSavedMarkers } from './map.js';
 import { getGeolocation, geolocMarker } from './geolocation.js';
 import { drawRoute, routingEvents } from './routing.js';
 
@@ -33,6 +33,11 @@ const durationEl = document.getElementById('duration');
 const savedToggleBtn = document.getElementById('savedToggleBtn');
 const savedPanel = document.getElementById('savedPanel');
 const savedTypes = ['home', 'workplace', 'study', 'favorite'];
+
+const stationInfoEl = document.getElementById('stationInfo');
+const stationNameEl = document.getElementById('stationName');
+const stationTypeEl = document.getElementById('stationType');
+const stationDescriptionEl = document.getElementById('stationDescription');
 
 function updateUI() {
     const bothSelected = currentSelectedMarker1 !== null && currentSelectedMarker2 !== null;
@@ -146,6 +151,19 @@ profileSelect.addEventListener('change', function () {
   if (currentSelectedMarker1 !== null && currentSelectedMarker2 !== null && !panelEl.classList.contains('hidden')) {
     drawRoute(currentSelectedMarker1, currentSelectedMarker2, profileSelect.value);
   }
+});
+
+map.getViewport().addEventListener('contextmenu', function (event) {
+  event.preventDefault();
+  const feature = map.getFeaturesAtPixel(map.getEventPixel(event))
+    .find(feature => stationsLayer.getSource().getFeatures().includes(feature));
+  if (!feature) return;
+ 
+  stationNameEl.textContent = feature.get('name');
+  stationTypeEl.textContent = feature.get('type');
+  stationDescriptionEl.textContent = feature.get('description');
+  stationInfoEl.hidden = false;
+  savedPanel.classList.add('open');
 });
 
 savedToggleBtn.addEventListener('click', function () {

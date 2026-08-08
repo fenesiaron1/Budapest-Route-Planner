@@ -1,0 +1,50 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [19.0538, 47.4975] },
+      "properties": {
+        "name": "Deák Ferenc tér",
+        "type": "Metro interchange (M1, M2, M3)",
+        "description": "Budapest's central metro hub where all three metro lines meet, right by the historic downtown."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [19.0827, 47.5003] },
+      "properties": {
+        "name": "Keleti pályaudvar",
+        "type": "Railway terminus / Metro station (M2, M4)",
+        "description": "One of Budapest's main international and domestic railway terminals, also served by two metro lines."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [19.0575, 47.5106] },
+      "properties": {
+        "name": "Nyugati pályaudvar",
+        "type": "Railway terminus / Metro station (M3)",
+        "description": "A landmark railway station designed with help from the Eiffel company, connecting to the M3 metro line."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [19.0304, 47.4649] },
+      "properties": {
+        "name": "Kelenföld vasútállomás",
+        "type": "Railway station / Metro station (M4)",
+        "description": "A major railway and transport hub on the Buda side, terminus of the M4 metro line."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [19.0234, 47.5072] },
+      "properties": {
+        "name": "Széll Kálmán tér",
+        "type": "Metro / tram / bus interchange (M2)",
+        "description": "A key transport square on the Buda side, connecting metro, trams, and buses beneath Castle Hill."
+      }
+    }
+  ]
+}

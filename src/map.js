@@ -9,6 +9,7 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { Icon, Style } from 'ol/style';
 import Stroke from 'ol/style/Stroke.js';
+import GeoJSON from 'ol/format/GeoJSON.js';
 
 export const map = new Map({
   target: 'map',
@@ -52,6 +53,13 @@ export const savedLayer = new VectorLayer({
     })
 });
 savedLayer.setZIndex(15);
+
+export const stationsLayer = new VectorLayer({
+    source: new VectorSource({
+        features: [],
+    })
+});
+stationsLayer.setZIndex(12);
 
 export const geolocStyle = new Style({
   image: new Icon({
@@ -101,6 +109,14 @@ export const favoriteStyle = new Style({
   }),
 });
 
+export const stationStyle = new Style({
+  image: new Icon({
+    src: 'src/station.png',
+    anchor: [0.5, 1],
+    scale: 0.05
+  }),
+});
+
 export const routeStyle = new Style({
   stroke: new Stroke({
     color: 'red',
@@ -112,6 +128,7 @@ map.addLayer(markerLayer);
 map.addLayer(routeLayer);
 map.addLayer(geolocLayer);
 map.addLayer(savedLayer);
+map.addLayer(stationsLayer);
 
 export function addMarker(coord) {
   const marker = new Feature({
@@ -186,3 +203,18 @@ export function removeSavedMarker(type) {
   persistSavedMarkers();
 }
 
+async function loadStations() {
+  try {
+    const response = await fetch('src/stations.geojson');
+    const geojsonData = await response.json();
+    const features = new GeoJSON().readFeatures(geojsonData, {
+      dataProjection: 'EPSG:4326',
+      featureProjection: 'EPSG:3857'
+    });
+    features.forEach(feature => feature.setStyle(stationStyle));
+    stationsLayer.getSource().addFeatures(features);
+  } catch (e) {
+    console.error('Failed to load stations', e);
+  }
+}
+loadStations();
