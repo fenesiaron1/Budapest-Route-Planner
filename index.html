@@ -9,6 +9,32 @@
   <body>
     <div id="map"></div>
 
+    <button id="savedToggleBtn" title="Saved places">&#9776;</button>
+
+    <div id="savedPanel">
+      <h3>Saved places</h3>
+      <div class="saved-row" data-type="home">
+        <span class="saved-label">Home</span>
+        <button class="saved-action">Add</button>
+        <button class="saved-delete" hidden>Delete</button>
+      </div>
+      <div class="saved-row" data-type="workplace">
+        <span class="saved-label">Workplace</span>
+        <button class="saved-action">Add</button>
+        <button class="saved-delete" hidden>Delete</button>
+      </div>
+      <div class="saved-row" data-type="study">
+        <span class="saved-label">Study</span>
+        <button class="saved-action">Add</button>
+        <button class="saved-delete" hidden>Delete</button>
+      </div>
+      <div class="saved-row" data-type="favorite">
+        <span class="saved-label">Favorite</span>
+        <button class="saved-action">Add</button>
+        <button class="saved-delete" hidden>Delete</button>
+      </div>
+    </div>
+
     <div id="controls">
       <button id="planBtn">Plan route</button>
       <button id="clearBtn">Clear</button>

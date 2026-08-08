@@ -11,12 +11,14 @@ import VectorSource from 'ol/source/Vector';
 import { Icon, Style } from 'ol/style';
 import LineString from 'ol/geom/LineString.js';
 import Stroke from 'ol/style/Stroke.js';
-import { map, markerLayer, routeLayer, geolocLayer, geolocStyle, markerStyle, routeStyle, addMarker } from './map.js';
+import { map, markerLayer, routeLayer, geolocLayer, geolocStyle, markerStyle, routeStyle, addMarker, savedLayer, getSavedMarker, setSavedMarker, removeSavedMarker, loadSavedMarkers } from './map.js';
 import { getGeolocation, geolocMarker } from './geolocation.js';
 import { drawRoute, routingEvents } from './routing.js';
 
 var currentSelectedMarker1 = null;
 var currentSelectedMarker2 = null;
+
+var placingType = null;
 
 const controlsEl = document.getElementById('controls');
 const panelEl = document.getElementById('panel');
@@ -27,6 +29,10 @@ const startCoordEl = document.getElementById('startCoord');
 const endCoordEl = document.getElementById('endCoord');
 const distanceEl = document.getElementById('distance');
 const durationEl = document.getElementById('duration');
+
+const savedToggleBtn = document.getElementById('savedToggleBtn');
+const savedPanel = document.getElementById('savedPanel');
+const savedTypes = ['home', 'workplace', 'study', 'favorite'];
 
 function updateUI() {
     const bothSelected = currentSelectedMarker1 !== null && currentSelectedMarker2 !== null;
@@ -40,6 +46,23 @@ function resetMarkers() {
     currentSelectedMarker2 = null;
     routeLayer.getSource().clear();
     updateUI();
+}
+
+function selectAsRouteMarker(coord) {
+    resetMarkers();
+    currentSelectedMarker1 = addMarker(coord);
+    updateUI();
+}
+
+function updateSavedPanel() {
+    savedTypes.forEach(type => {
+        const row = savedPanel.querySelector(`.saved-row[data-type="${type}"]`);
+        const actionBtn = row.querySelector('.saved-action');
+        const deleteBtn = row.querySelector('.saved-delete');
+        const exists = getSavedMarker(type) !== undefined;
+        actionBtn.textContent = exists ? 'Modify' : 'Add';
+        deleteBtn.hidden = !exists;
+    });
 }
 
 routingEvents.addEventListener('routecalculated', (event) => {
@@ -58,11 +81,25 @@ routingEvents.addEventListener('routecalculationerror', () => {
 });
 
 map.on('click', function (event) {
-    if(map.getFeaturesAtPixel(event.pixel).some(feature => feature === geolocMarker)) {
-      resetMarkers();
-      currentSelectedMarker1 = addMarker(geolocMarker.getGeometry().getCoordinates());
-      updateUI();
-      return;
+    if (placingType !== null) {
+        const type = placingType;
+        placingType = null;
+        setSavedMarker(type, event.coordinate);
+        updateSavedPanel();
+        return;
+    }
+
+    const features = map.getFeaturesAtPixel(event.pixel);
+
+    if (features.some(feature => feature === geolocMarker)) {
+        selectAsRouteMarker(geolocMarker.getGeometry().getCoordinates());
+        return;
+    }
+
+    const savedFeature = features.find(feature => savedLayer.getSource().getFeatures().includes(feature));
+    if (savedFeature) {
+        selectAsRouteMarker(savedFeature.getGeometry().getCoordinates());
+        return;
     }
 
     if(currentSelectedMarker1 === null) currentSelectedMarker1 = addMarker(event.coordinate);
@@ -72,12 +109,17 @@ map.on('click', function (event) {
 });
 
 map.on('pointermove', function (event) {
-    map.getTargetElement().style.cursor = map.getFeaturesAtPixel(event.pixel).some(feature => feature === geolocMarker) ? 'pointer' : '';
+    const features = map.getFeaturesAtPixel(event.pixel);
+    const overClickable = features.some(feature => feature === geolocMarker) ||
+        features.some(feature => savedLayer.getSource().getFeatures().includes(feature));
+    map.getTargetElement().style.cursor = placingType !== null ? 'crosshair' : (overClickable ? 'pointer' : '');
 });
 
 document.addEventListener('keydown', function (event) {
   if (event.key === 'Escape') {
     resetMarkers();
+    placingType = null;
+    savedPanel.classList.remove('open');
   }
 });
 
@@ -105,4 +147,22 @@ profileSelect.addEventListener('change', function () {
   }
 });
 
+savedToggleBtn.addEventListener('click', function () {
+  savedPanel.classList.toggle('open');
+});
 
+savedPanel.addEventListener('click', function (event) {
+  const row = event.target.closest('.saved-row');
+  if (!row) return;
+  const type = row.dataset.type;
+
+  if (event.target.classList.contains('saved-action')) {
+    placingType = type;
+  } else if (event.target.classList.contains('saved-delete')) {
+    removeSavedMarker(type);
+    updateSavedPanel();
+  }
+});
+
+loadSavedMarkers();
+updateSavedPanel();
