@@ -49,8 +49,9 @@ function resetMarkers() {
 }
 
 function selectAsRouteMarker(coord) {
-    resetMarkers();
-    currentSelectedMarker1 = addMarker(coord);
+    if(currentSelectedMarker1 === null) currentSelectedMarker1 = addMarker(coord);
+    else if(currentSelectedMarker2 === null) currentSelectedMarker2 = addMarker(coord);
+    else resetMarkers();
     updateUI();
 }
 
