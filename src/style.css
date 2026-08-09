@@ -43,6 +43,11 @@ html, body {
   bottom: 70px;
 }
 
+#routeRecommendation {
+  width: 100%;
+  font-size: 1.05em;
+}
+
 #controls.visible, #panel.visible {
   opacity: 1;
   visibility: visible;

@@ -29,6 +29,7 @@ const startCoordEl = document.getElementById('startCoord');
 const endCoordEl = document.getElementById('endCoord');
 const distanceEl = document.getElementById('distance');
 const durationEl = document.getElementById('duration');
+const routeRecommendationEl = document.getElementById('routeRecommendation');
 
 const savedToggleBtn = document.getElementById('savedToggleBtn');
 const savedPanel = document.getElementById('savedPanel');
@@ -72,11 +73,13 @@ function updateSavedPanel() {
 }
 
 routingEvents.addEventListener('routecalculated', (event) => {
-    const { startCoord, endCoord, data } = event.detail;
+    const { startCoord, endCoord, data, recommendation } = event.detail;
     startCoordEl.textContent = startCoord.map(c => c.toFixed(5)).join(', ');
     endCoordEl.textContent = endCoord.map(c => c.toFixed(5)).join(', ');
     distanceEl.textContent = (data.routes[0].distance / 1000).toFixed(2) + ' km';
     durationEl.textContent = Math.round(data.routes[0].duration / 60) + ' min';
+    if(recommendation !== '')
+      routeRecommendationEl.textContent = recommendation;
     panelEl.classList.add('visible');
 });
 
@@ -139,7 +142,7 @@ document.addEventListener('keydown', function (event) {
 
 planBtn.addEventListener('click', function () {
   if (currentSelectedMarker1 !== null && currentSelectedMarker2 !== null) {
-    drawRoute(currentSelectedMarker1, currentSelectedMarker2, profileSelect.value);
+    drawRoute(currentSelectedMarker1, currentSelectedMarker2, 'default');
   }
 });
 
