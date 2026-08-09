@@ -112,6 +112,12 @@ map.on('click', function (event) {
         return;
     }
 
+    const stationFeature = features.find(feature => stationsLayer.getSource().getFeatures().includes(feature));
+    if (stationFeature) {
+        selectAsRouteMarker(stationFeature.getGeometry().getCoordinates());
+        return;
+    }
+
     if(currentSelectedMarker1 === null) currentSelectedMarker1 = addMarker(event.coordinate);
     else if(currentSelectedMarker2 === null) currentSelectedMarker2 = addMarker(event.coordinate);
     else resetMarkers();
@@ -121,7 +127,8 @@ map.on('click', function (event) {
 map.on('pointermove', function (event) {
     const features = map.getFeaturesAtPixel(event.pixel);
     const overClickable = features.some(feature => feature === geolocMarker) ||
-        features.some(feature => savedLayer.getSource().getFeatures().includes(feature));
+        features.some(feature => savedLayer.getSource().getFeatures().includes(feature)) ||
+        features.some(feature => stationsLayer.getSource().getFeatures().includes(feature));
     map.getTargetElement().style.cursor = placingType !== null ? 'crosshair' : (overClickable ? 'pointer' : '');
 });
 
