@@ -73,13 +73,14 @@ function updateSavedPanel() {
 }
 
 routingEvents.addEventListener('routecalculated', (event) => {
-    const { startCoord, endCoord, data, recommendation } = event.detail;
+    const { startCoord, endCoord, data, recommendation, profile } = event.detail;
     startCoordEl.textContent = startCoord.map(c => c.toFixed(5)).join(', ');
     endCoordEl.textContent = endCoord.map(c => c.toFixed(5)).join(', ');
     distanceEl.textContent = (data.routes[0].distance / 1000).toFixed(2) + ' km';
     durationEl.textContent = Math.round(data.routes[0].duration / 60) + ' min';
     if(recommendation !== '')
       routeRecommendationEl.textContent = recommendation;
+    profileSelect.value = profile;
     panelEl.classList.add('visible');
 });
 

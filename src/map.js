@@ -119,10 +119,21 @@ export const stationStyle = new Style({
 
 export const routeStyle = new Style({
   stroke: new Stroke({
-    color: 'red',
+    color: 'rgb(50, 100, 255)',
     width: 4
   })
 });
+
+const trafficStyles = {
+  1: new Style({ stroke: new Stroke({ color: 'green', width: 5 }) }),
+  2: new Style({ stroke: new Stroke({ color: 'yellow', width: 5 }) }),
+  3: new Style({ stroke: new Stroke({ color: 'red', width: 5 }) }),
+  4: new Style({ stroke: new Stroke({ color: 'magenta', width: 5 }) }),
+};
+ 
+export function getTrafficStyle(magnitudeOfDelay) {
+  return trafficStyles[magnitudeOfDelay] || routeStyle;
+}
 
 map.addLayer(markerLayer);
 map.addLayer(routeLayer);
