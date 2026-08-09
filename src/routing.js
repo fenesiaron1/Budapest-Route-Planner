@@ -63,6 +63,7 @@ export async function drawRouteWalking(startCoord, endCoord, recommendation) {
     }));
 }
 
+/*
 export async function drawRouteDriving(startCoord, endCoord, recommendation) {
   const url = `https://router.project-osrm.org/route/v1/driving/` +
   `${startCoord[0]},${startCoord[1]};${endCoord[0]},${endCoord[1]}` +
@@ -86,4 +87,42 @@ export async function drawRouteDriving(startCoord, endCoord, recommendation) {
         recommendation
       }
     }));
+}
+    */
+
+export async function drawRouteDriving(startCoord, endCoord, recommendation) {
+  const apiKey = import.meta.env.VITE_TOMTOM_API_KEY;
+ 
+  const url = `https://api.tomtom.com/routing/1/calculateRoute/` +
+  `${startCoord[1]},${startCoord[0]}:${endCoord[1]},${endCoord[0]}/json` +
+  `?key=${apiKey}&traffic=true`;
+ 
+  const response = await fetch(url);
+  const data = await response.json();
+ 
+  const routeCoords = data.routes[0].legs[0].points
+    .map(point => fromLonLat([point.longitude, point.latitude]));
+ 
+  routeLayer.getSource().clear();
+  const route = new Feature({
+    geometry: new LineString(routeCoords)
+  });
+  route.setStyle(routeStyle);
+  routeLayer.getSource().addFeature(route);
+ 
+  const normalizedData = {
+    routes: [{
+      distance: data.routes[0].summary.lengthInMeters,
+      duration: data.routes[0].summary.travelTimeInSeconds
+    }]
+  };
+ 
+  routingEvents.dispatchEvent(new CustomEvent('routecalculated', {
+    detail: {
+      startCoord,
+      endCoord,
+      data: normalizedData,
+      recommendation
+    }
+  }));
 }
