@@ -10,13 +10,26 @@ import VectorSource from 'ol/source/Vector';
 import { Icon, Style } from 'ol/style';
 import Stroke from 'ol/style/Stroke.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
+import XYZ from 'ol/source/XYZ';
+
+const osmSource = new OSM();
+const darkSource = new XYZ({
+  url: 'https://{a-d}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+  attributions: '&copy; OpenStreetMap contributors &copy; CARTO'
+});
+ 
+export const baseLayer = new TileLayer({
+  source: osmSource
+});
+
+export function setMapTheme(theme) {
+  baseLayer.setSource(theme === 'dark' ? darkSource : osmSource);
+}
 
 export const map = new Map({
   target: 'map',
   layers: [
-    new TileLayer({
-      source: new OSM()
-    })
+    baseLayer
   ],
   interactions: defaults({
         doubleClickZoom: false
@@ -160,6 +173,24 @@ function getStyleForType(type) {
 }
 
 const SAVED_STORAGE_KEY = 'savedLocations';
+const THEME_STORAGE_KEY = 'mapTheme';
+ 
+export function persistTheme(theme) {
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch (e) {
+    console.error('Failed to save theme', e);
+  }
+}
+ 
+export function loadTheme() {
+  try {
+    return localStorage.getItem(THEME_STORAGE_KEY) || 'light';
+  } catch (e) {
+    console.error('Failed to load theme', e);
+    return 'light';
+  }
+}
  
 function persistSavedMarkers() {
   const data = {};

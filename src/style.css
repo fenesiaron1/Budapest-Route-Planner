@@ -1,4 +1,17 @@
 @import "../node_modules/ol/ol.css";
+
+:root {
+  --ui-bg: #ffffff;
+  --ui-text: #000000;
+  --ui-border: #cccccc;
+}
+ 
+body.dark-mode {
+  --ui-bg: #2b2b2b;
+  --ui-text: #ffffff;
+  --ui-border: #555555;
+}
+
 html, body {
   margin: 0;
   height: 100%;
@@ -17,7 +30,8 @@ html, body {
   width: max-content;
   max-width: 90%;
   z-index: 1;
-  background: white;
+  background: var(--ui-bg);
+  color: var(--ui-text);
   box-shadow: 0 0 6px rgba(0,0,0,0.3);
   border-radius: 6px;
   padding: 0.6em 1em;
@@ -34,6 +48,7 @@ html, body {
 #controls button {
   font-size: 1em;  
   padding: 0.5em 1em;
+  cursor: pointer;
 }
 
 #controls {
@@ -59,7 +74,8 @@ html, body {
   top: 10px;
   right: 10px;
   z-index: 3;
-  background: white;
+  background: var(--ui-bg);
+  color: var(--ui-text);
   border: none;
   box-shadow: 0 0 6px rgba(0,0,0,0.3);
   border-radius: 6px;
@@ -77,7 +93,8 @@ html, body {
   width: 25%;
   max-width: 85%;
   box-sizing: border-box;
-  background: white;
+  background: var(--ui-bg);
+  color: var(--ui-text);
   box-shadow: -2px 0 6px rgba(0,0,0,0.3);
   z-index: 2;
   padding: 3.5em 1em 1em;
@@ -114,8 +131,9 @@ html, body {
   font-size: 0.9em;
   padding: 0.4em 0.7em;
   border-radius: 4px;
-  border: 1px solid #ccc;
-  background: white;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-bg);
+  color: var(--ui-text);
   cursor: pointer;
 }
 
@@ -123,6 +141,20 @@ html, body {
   background: #e33;
   color: white;
   border-color: #e33;
+}
+
+#profile {
+  background: var(--ui-bg);
+  color: var(--ui-text);
+  border: 1px solid var(--ui-border);
+  border-radius: 4px;
+}
+
+#controls button {
+  background: var(--ui-bg);
+  color: var(--ui-text);
+  border: 1px solid var(--ui-border);
+  border-radius: 4px;
 }
 
 @media (max-width: 600px) {

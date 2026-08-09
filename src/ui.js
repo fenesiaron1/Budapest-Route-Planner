@@ -11,7 +11,7 @@ import VectorSource from 'ol/source/Vector';
 import { Icon, Style } from 'ol/style';
 import LineString from 'ol/geom/LineString.js';
 import Stroke from 'ol/style/Stroke.js';
-import { map, markerLayer, routeLayer, geolocLayer, geolocStyle, markerStyle, routeStyle, addMarker, savedLayer, stationsLayer, getSavedMarker, setSavedMarker, removeSavedMarker, loadSavedMarkers } from './map.js';
+import { map, markerLayer, routeLayer, geolocLayer, geolocStyle, markerStyle, routeStyle, addMarker, savedLayer, stationsLayer, getSavedMarker, setSavedMarker, removeSavedMarker, loadSavedMarkers, setMapTheme, persistTheme, loadTheme } from './map.js';
 import { getGeolocation, geolocMarker } from './geolocation.js';
 import { drawRoute, routingEvents } from './routing.js';
 
@@ -194,5 +194,20 @@ savedPanel.addEventListener('click', function (event) {
   }
 });
 
+document.querySelectorAll('input[name="theme"]').forEach(radio => {
+  radio.addEventListener('change', function () {
+    if (!this.checked) return;
+    document.body.classList.toggle('dark-mode', this.value === 'dark');
+    setMapTheme(this.value);
+    persistTheme(this.value);
+  });
+});
+
 loadSavedMarkers();
 updateSavedPanel();
+
+const savedTheme = loadTheme();
+const savedThemeRadio = document.querySelector(`input[name="theme"][value="${savedTheme}"]`);
+if (savedThemeRadio) savedThemeRadio.checked = true;
+document.body.classList.toggle('dark-mode', savedTheme === 'dark');
+setMapTheme(savedTheme);
