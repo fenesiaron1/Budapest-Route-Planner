@@ -50,3 +50,17 @@ Driving routes require a free TomTom API key.
 - Only a single start/end pair is supported — no multi-stop routes.
 - Saved locations and theme are stored per-browser via `localStorage`; they don't sync across devices or browsers.
 - Requires the user to grant location permission for the "current location" marker to appear.
+
+## Demonstration screenshots
+
+Here's how the map should look at startup, prompt to enable geolocation expected. Station and saved locations are visible.
+![Alt text](src/demonstration_images/startup.png)
+
+Image showing the side panel. It contains information when right-clicking a station. Here you can change the theme, and add or delete saved locations that will be shown as markers.
+![Alt text](src/demonstration_images/side_panel.png)
+
+Image showing a calculated route, method set to driving due to long distance.
+![Alt text](src/demonstration_images/route.png)
+
+Image showing the dark themed map and ui, and different traffic states reported by TomTom api.
+![Alt text](src/demonstration_images/darkmode.png)
