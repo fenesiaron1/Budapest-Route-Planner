@@ -30,7 +30,7 @@ Driving routes require a free TomTom API key.
    ```
 3. Start the dev server:
    ```bash
-   npm run dev
+   npm start
    ```
 4. Open the printed local URL in your browser.
 
