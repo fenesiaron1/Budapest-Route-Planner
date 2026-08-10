@@ -1,18 +1,52 @@
-# OpenLayers + Vite
+# Budapest Route Planner
 
-This example demonstrates how the `ol` package can be used with [Vite](https://vitejs.dev/).
+A browser based map application for planning routes around Budapest. Pick a start and end point, get a walking, cycling, or driving route (with live traffic on driving routes), save personal locations, and explore key BKK public transport stations.
 
-To get started, run the following (requires Node 14+):
+## Technologies
 
-    npx create-ol-app my-app --template vite
+- [OpenLayers](https://openlayers.org/): interactive map rendering
+- [Vite](https://vitejs.dev/): dev server and build tool
+- [OSRM](http://project-osrm.org/): walking and cycling routing
+- [TomTom Routing API](https://developer.tomtom.com/routing-api): driving routes with live traffic
+- Browser Geolocation API shows the user's current position
+- Browser `localStorage` persists saved locations and theme choice
 
-Then change into your new `my-app` directory and start a development server (available at http://localhost:5173):
+## Installation
 
-    cd my-app
-    npm start
+```bash
+git clone <repository-url>
+cd <project-folder>
+npm install
+```
 
-To generate a build ready for production:
+## Running the project
 
-    npm run build
+Driving routes require a free TomTom API key.
 
-Then deploy the contents of the `dist` directory to your server.  You can also run `npm run serve` to serve the results of the `dist` directory for preview.
+1. Create an account at [developer.tomtom.com](https://developer.tomtom.com) and generate an API key.
+2. Create a `.env` file in the project root:
+   ```
+   VITE_TOMTOM_API_KEY=your_key_here
+   ```
+3. Start the dev server:
+   ```bash
+   npm run dev
+   ```
+4. Open the printed local URL in your browser.
+
+## Use cases
+
+- **Plan a route**: click two points on the map (or any of the custom markers) and click "Plan route" to get a route with distance, travel time, and a walking/driving recommendation based on distance.
+- **Choose a travel profile**: switch between walking, cycling, and driving; driving routes are colored by traffic severity.
+- **Save personal places**: mark a Home, Workplace, Study, or Favorite location from the side panel; they're saved automatically and reloaded on your next visit.
+- **Browse BKK stations**: right-click a station marker to see its name, type, and description in the side panel.
+- **Switch theme**: toggle between light and dark map and UI, saved automatically.
+
+## Known limitations
+
+- Routing depends on the public OSRM demo server, which has no uptime guarantee and can be slow or rate limited under heavy use.
+- The TomTom free tier has a limited number of requests per day; driving routes will fail once that limit is reached.
+- Traffic sections often report a delay magnitude of 0 (no delay) or 4 (indeterminate) outside of real congestion, since TomTom can only report meaningful delay levels (1–3) where live traffic data is actually available.
+- Only a single start/end pair is supported — no multi-stop routes.
+- Saved locations and theme are stored per-browser via `localStorage`; they don't sync across devices or browsers.
+- Requires the user to grant location permission for the "current location" marker to appear.
