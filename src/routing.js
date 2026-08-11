@@ -4,8 +4,11 @@ import Feature from 'ol/Feature';
 import { routeLayer, routeStyle, getTrafficStyle, getTransitLegStyle } from './map.js';
 import Polyline from 'ol/format/Polyline.js';
 
+// Event dispatches 'routecalculated' and 'routecalculationerror', used by ui.js
 export const routingEvents = new EventTarget();
 
+// Dispatches to the right routing function based on the selected profile.
+// 'default' makes a quick OSRM distance estimate, then decides whether to use BKK or TomTom routing based on the distance.
 export async function drawRoute(startMarker, endMarker, profile = 'default') {
   const startCoord = toLonLat(startMarker.getGeometry().getCoordinates());
   const endCoord = toLonLat(endMarker.getGeometry().getCoordinates());
@@ -37,11 +40,12 @@ export async function drawRoute(startMarker, endMarker, profile = 'default') {
     }
 
   } catch (error) {
-    alert("Error calculating route");
     routingEvents.dispatchEvent(new CustomEvent('routecalculationerror'));
   }
 }
 
+// Fetches a driving route with live traffic from TomTom.
+// Draws the full route in the default color, then overlays each traffic-affected segments.
 export async function drawRouteDriving(startCoord, endCoord, recommendation, profile) {
   const apiKey = import.meta.env.VITE_TOMTOM_API_KEY;
  
@@ -96,6 +100,7 @@ export async function drawRouteDriving(startCoord, endCoord, recommendation, pro
   }));
 }
 
+// Walking and public transit routing using BKK's API. Returns a single itinerary with legs for each segment of the trip.
 export async function drawRouteBKK(startCoord, endCoord, recommendation, profile) {
   const apiKey = import.meta.env.VITE_BKK_API_KEY;
  

@@ -5,6 +5,7 @@ import { map, markerLayer, routeLayer, geolocLayer, geolocStyle, markerStyle, ro
 
 export var geolocMarker = null;
 
+// Requests the browser's current position and places a marker for it on the map
 export function getGeolocation() {
   navigator.geolocation.getCurrentPosition(position => {
     const coords = [position.coords.longitude, position.coords.latitude];
@@ -28,6 +29,7 @@ export function getGeolocation() {
 }
 getGeolocation();
 
+// Rerequests the position if the user changes the geolocation permission
 const permission = await navigator.permissions.query({
     name: 'geolocation'
 });

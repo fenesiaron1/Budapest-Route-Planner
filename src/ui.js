@@ -15,11 +15,14 @@ import { map, markerLayer, routeLayer, geolocLayer, geolocStyle, markerStyle, ro
 import { getGeolocation, geolocMarker } from './geolocation.js';
 import { drawRoute, routingEvents } from './routing.js';
 
+// The two route-selection markers. Null if not selected yet.
 var currentSelectedMarker1 = null;
 var currentSelectedMarker2 = null;
 
+// Set to a saved-location type, null if not placing a saved location.
 var placingType = null;
 
+// References to route controls/info panel.
 const controlsEl = document.getElementById('controls');
 const panelEl = document.getElementById('panel');
 const planBtn = document.getElementById('planBtn');
@@ -31,21 +34,25 @@ const distanceEl = document.getElementById('distance');
 const durationEl = document.getElementById('duration');
 const routeRecommendationEl = document.getElementById('routeRecommendation');
 
+// References to saved-places side panel.
 const savedToggleBtn = document.getElementById('savedToggleBtn');
 const savedPanel = document.getElementById('savedPanel');
 const savedTypes = ['home', 'workplace', 'study', 'favorite'];
 
+// References to station info section in the side panel.
 const stationInfoEl = document.getElementById('stationInfo');
 const stationNameEl = document.getElementById('stationName');
 const stationTypeEl = document.getElementById('stationType');
 const stationDescriptionEl = document.getElementById('stationDescription');
 
+// Shows/hides the route controls and info panel depending on whether both route markers are selected.
 function updateUI() {
     const bothSelected = currentSelectedMarker1 !== null && currentSelectedMarker2 !== null;
     controlsEl.classList.toggle('visible', bothSelected);
     if (!bothSelected) panelEl.classList.remove('visible');
 }
 
+// Clears both route-selection markers and the drawn route.
 function resetMarkers() {
     markerLayer.getSource().clear();
     currentSelectedMarker1 = null;
@@ -54,6 +61,7 @@ function resetMarkers() {
     updateUI();
 }
 
+// Uses a coordinate (from geolocation, a saved location, or a station) as the next route-selection marker
 function selectAsRouteMarker(coord) {
     if(currentSelectedMarker1 === null) currentSelectedMarker1 = addMarker(coord);
     else if(currentSelectedMarker2 === null) currentSelectedMarker2 = addMarker(coord);
@@ -61,6 +69,7 @@ function selectAsRouteMarker(coord) {
     updateUI();
 }
 
+// Updates each saved-places row's Add/Modify label and Delete button
 function updateSavedPanel() {
     savedTypes.forEach(type => {
         const row = savedPanel.querySelector(`.saved-row[data-type="${type}"]`);
@@ -72,6 +81,7 @@ function updateSavedPanel() {
     });
 }
 
+// Fills in the route info panel whenever any routing function finishes.
 routingEvents.addEventListener('routecalculated', (event) => {
     const { startCoord, endCoord, data, recommendation, profile } = event.detail;
     startCoordEl.textContent = startCoord.map(c => c.toFixed(5)).join(', ');
@@ -84,12 +94,14 @@ routingEvents.addEventListener('routecalculated', (event) => {
     panelEl.classList.add('visible');
 });
 
+// Resets the selection and warns the user if a routing request fails.
 routingEvents.addEventListener('routecalculationerror', () => {
     alert("Error calculating route");
     resetMarkers();
     updateUI();
 });
 
+// Main map click handler. Places a saved location or a route marker depending on placingType.
 map.on('click', function (event) {
     if (placingType !== null) {
         const type = placingType;
@@ -124,6 +136,7 @@ map.on('click', function (event) {
     updateUI();
 });
 
+// Changes the cursor when placing a saved location or hovering over a clickable marker.
 map.on('pointermove', function (event) {
     const features = map.getFeaturesAtPixel(event.pixel);
     const overClickable = features.some(feature => feature === geolocMarker) ||
@@ -132,22 +145,7 @@ map.on('pointermove', function (event) {
     map.getTargetElement().style.cursor = placingType !== null ? 'crosshair' : (overClickable ? 'pointer' : '');
 });
 
-document.addEventListener('keydown', function (event) {
-  if (event.key === 'Escape') {
-    resetMarkers();
-    placingType = null;
-    savedPanel.classList.remove('open');
-  }
-});
-
-document.addEventListener('keydown', function (event) {
-  if (event.key === 'r') {
-    if (currentSelectedMarker1 !== null && currentSelectedMarker2 !== null && routeLayer.getSource().getFeatures().length === 0) {
-      drawRoute(currentSelectedMarker1, currentSelectedMarker2, profileSelect.value);
-    }
-  }
-});
-
+// Plan route always uses the 'default'  profile.
 planBtn.addEventListener('click', function () {
   if (currentSelectedMarker1 !== null && currentSelectedMarker2 !== null) {
     drawRoute(currentSelectedMarker1, currentSelectedMarker2, 'default');
@@ -158,12 +156,14 @@ clearBtn.addEventListener('click', function () {
   resetMarkers();
 });
 
+// Recalculates the route whenever the travel mode dropdown changes.
 profileSelect.addEventListener('change', function () {
   if (currentSelectedMarker1 !== null && currentSelectedMarker2 !== null && !panelEl.classList.contains('hidden')) {
     drawRoute(currentSelectedMarker1, currentSelectedMarker2, profileSelect.value);
   }
 });
 
+// Right-clicking a station marker shows its details in the side panel
 map.getViewport().addEventListener('contextmenu', function (event) {
   event.preventDefault();
   const feature = map.getFeaturesAtPixel(map.getEventPixel(event))
@@ -177,10 +177,12 @@ map.getViewport().addEventListener('contextmenu', function (event) {
   savedPanel.classList.add('open');
 });
 
+// Toggles the side panel
 savedToggleBtn.addEventListener('click', function () {
   savedPanel.classList.toggle('open');
 });
 
+// Handles Add/Modify and Delete clicks for any saved-place row.
 savedPanel.addEventListener('click', function (event) {
   const row = event.target.closest('.saved-row');
   if (!row) return;
@@ -194,6 +196,7 @@ savedPanel.addEventListener('click', function (event) {
   }
 });
 
+// Applies and persists the theme whenever a radio button is selected
 document.querySelectorAll('input[name="theme"]').forEach(radio => {
   radio.addEventListener('change', function () {
     if (!this.checked) return;
@@ -203,6 +206,7 @@ document.querySelectorAll('input[name="theme"]').forEach(radio => {
   });
 });
 
+// Initializes the saved-places panel and theme on page load from localStorage.
 loadSavedMarkers();
 updateSavedPanel();
 
