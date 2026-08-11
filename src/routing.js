@@ -42,33 +42,6 @@ export async function drawRoute(startMarker, endMarker, profile = 'default') {
   }
 }
 
-export async function drawRouteWalking(startCoord, endCoord, recommendation, profile) {
-  const url = `https://router.project-osrm.org/route/v1/walking/` +
-  `${startCoord[0]},${startCoord[1]};${endCoord[0]},${endCoord[1]}` +
-  `?overview=full&geometries=geojson`;
-
-  const response = await fetch(url);
-  const data = await response.json();
-
-
-  routeLayer.getSource().clear();
-    const route = new Feature({
-      geometry: new LineString(data.routes[0].geometry.coordinates.map(coord => fromLonLat(coord)))
-    });
-    route.setStyle(routeStyle);
-    routeLayer.getSource().addFeature(route);
-
-    routingEvents.dispatchEvent(new CustomEvent('routecalculated', {
-      detail: {
-        startCoord,
-        endCoord,
-        data,
-        recommendation,
-        profile
-      }
-    }));
-}
-
 export async function drawRouteDriving(startCoord, endCoord, recommendation, profile) {
   const apiKey = import.meta.env.VITE_TOMTOM_API_KEY;
  
