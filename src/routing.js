@@ -20,20 +20,20 @@ export async function drawRoute(startMarker, endMarker, profile = 'default') {
       const data = await response.json();
       
       if(data.routes[0].distance < 1000) {
-        drawRouteWalking(startCoord, endCoord, "Walking route is recommended due to shorter distance.", 'walking');
+        await drawRouteWalking(startCoord, endCoord, "Walking route is recommended due to shorter distance.", 'walking');
       }
       else {
-        drawRouteDriving(startCoord, endCoord, "Driving route is recommended for longer distances.", 'driving');
+        await drawRouteDriving(startCoord, endCoord, "Driving route is recommended for longer distances.", 'driving');
       }
     }
     else if(profile === 'walking' || profile === 'cycling') {
-      drawRouteWalking(startCoord, endCoord, "", profile);
+      await drawRouteWalking(startCoord, endCoord, "", profile);
     }
     else if(profile === 'driving') {
-      drawRouteDriving(startCoord, endCoord, "", profile);
+      await drawRouteDriving(startCoord, endCoord, "", profile);
     }
     else if(profile === 'transit') {
-      drawRoutePublicTransit(startCoord, endCoord, "", profile);
+      await drawRoutePublicTransit(startCoord, endCoord, "", profile);
     }
 
   } catch (error) {
@@ -138,15 +138,9 @@ export async function drawRoutePublicTransit(startCoord, endCoord, recommendatio
  
   const entry = responseJson.data && responseJson.data.entry;
   const itineraries = entry && entry.plan && entry.plan.itineraries;
-  if (!itineraries || itineraries.length === 0) {
-    alert("No public transport route found");
-    routingEvents.dispatchEvent(new CustomEvent('routecalculationerror'));
-    return;
-  }
   const itinerary = itineraries[0];
  
   routeLayer.getSource().clear();
- 
   const polylineFormat = new Polyline();
   let totalDistance = 0;
  
