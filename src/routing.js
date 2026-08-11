@@ -100,7 +100,7 @@ export async function drawRouteDriving(startCoord, endCoord, recommendation, pro
   }));
 }
 
-// Walking and public transit routing using BKK's API. Returns a single itinerary with legs for each segment of the trip.
+// Walking and public transit routing using BKK's API that returns a single itinerary with legs for each segment of the trip.
 export async function drawRouteBKK(startCoord, endCoord, recommendation, profile) {
   const apiKey = import.meta.env.VITE_BKK_API_KEY;
  
