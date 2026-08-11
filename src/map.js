@@ -148,6 +148,17 @@ export function getTrafficStyle(magnitudeOfDelay) {
   return trafficStyles[magnitudeOfDelay] || routeStyle;
 }
 
+const walkingLegStyle = new Style({
+  stroke: new Stroke({ color: '#000000', width: 4, lineDash: [2, 8] })
+});
+ 
+export function getTransitLegStyle(leg) {
+  if (!leg.routeColor) return walkingLegStyle;
+  return new Style({
+    stroke: new Stroke({ color: `#${leg.routeColor}`, width: 5 })
+  });
+}
+
 map.addLayer(markerLayer);
 map.addLayer(routeLayer);
 map.addLayer(geolocLayer);

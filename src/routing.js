@@ -1,7 +1,8 @@
 import { toLonLat, fromLonLat } from 'ol/proj';
 import LineString from 'ol/geom/LineString.js';
 import Feature from 'ol/Feature';
-import { routeLayer, routeStyle, getTrafficStyle } from './map.js';
+import { routeLayer, routeStyle, getTrafficStyle, getTransitLegStyle } from './map.js';
+import Polyline from 'ol/format/Polyline.js';
 
 export const routingEvents = new EventTarget();
 
@@ -30,6 +31,9 @@ export async function drawRoute(startMarker, endMarker, profile = 'default') {
     }
     else if(profile === 'driving') {
       drawRouteDriving(startCoord, endCoord, "", profile);
+    }
+    else if(profile === 'transit') {
+      drawRoutePublicTransit(startCoord, endCoord, "", profile);
     }
 
   } catch (error) {
@@ -105,6 +109,64 @@ export async function drawRouteDriving(startCoord, endCoord, recommendation, pro
     routes: [{
       distance: route.summary.lengthInMeters,
       duration: route.summary.travelTimeInSeconds
+    }]
+  };
+ 
+  routingEvents.dispatchEvent(new CustomEvent('routecalculated', {
+    detail: {
+      startCoord,
+      endCoord,
+      data: normalizedData,
+      recommendation,
+      profile
+    }
+  }));
+}
+
+export async function drawRoutePublicTransit(startCoord, endCoord, recommendation, profile) {
+  const apiKey = import.meta.env.VITE_BKK_API_KEY;
+ 
+  const fromPlace = `::${startCoord[1]},${startCoord[0]}`;
+  const toPlace = `::${endCoord[1]},${endCoord[0]}`;
+ 
+  const url = `https://futar.bkk.hu/api/query/v1/ws/otp/api/where/plan-trip` +
+  `?key=${apiKey}&version=4&mode=TRANSIT,WALK&numItineraries=1` +
+  `&fromPlace=${encodeURIComponent(fromPlace)}&toPlace=${encodeURIComponent(toPlace)}`;
+ 
+  const response = await fetch(url);
+  const responseJson = await response.json();
+ 
+  const entry = responseJson.data && responseJson.data.entry;
+  const itineraries = entry && entry.plan && entry.plan.itineraries;
+  if (!itineraries || itineraries.length === 0) {
+    alert("No public transport route found");
+    routingEvents.dispatchEvent(new CustomEvent('routecalculationerror'));
+    return;
+  }
+  const itinerary = itineraries[0];
+ 
+  routeLayer.getSource().clear();
+ 
+  const polylineFormat = new Polyline();
+  let totalDistance = 0;
+ 
+  itinerary.legs.forEach(leg => {
+    totalDistance += leg.distance || 0;
+ 
+    const geometry = polylineFormat.readGeometry(leg.legGeometry.points, {
+      dataProjection: 'EPSG:4326',
+      featureProjection: 'EPSG:3857'
+    });
+ 
+    const legFeature = new Feature({ geometry });
+    legFeature.setStyle(getTransitLegStyle(leg));
+    routeLayer.getSource().addFeature(legFeature);
+  });
+ 
+  const normalizedData = {
+    routes: [{
+      distance: totalDistance,
+      duration: itinerary.duration
     }]
   };
  
