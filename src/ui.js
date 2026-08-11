@@ -33,6 +33,7 @@ const endCoordEl = document.getElementById('endCoord');
 const distanceEl = document.getElementById('distance');
 const durationEl = document.getElementById('duration');
 const routeRecommendationEl = document.getElementById('routeRecommendation');
+const transportModeEl = document.getElementById('transportMode');
 
 // References to saved-places side panel.
 const savedToggleBtn = document.getElementById('savedToggleBtn');
@@ -91,6 +92,7 @@ routingEvents.addEventListener('routecalculated', (event) => {
     if(recommendation !== '')
       routeRecommendationEl.textContent = recommendation;
     profileSelect.value = profile;
+    transportModeEl.textContent = profileSelect.options[profileSelect.selectedIndex].text;
     panelEl.classList.add('visible');
 });
 
