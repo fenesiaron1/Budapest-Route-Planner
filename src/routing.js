@@ -19,21 +19,21 @@ export async function drawRoute(startMarker, endMarker, profile = 'default') {
       const response = await fetch(url);
       const data = await response.json();
       
-      if(data.routes[0].distance < 1000) {
-        await drawRouteWalking(startCoord, endCoord, "Walking route is recommended due to shorter distance.", 'walking');
+      if(data.routes[0].distance < 1500) {
+        await drawRouteBKK(startCoord, endCoord, "Walking route is recommended due to shorter distance.", 'walking');
+      }
+      else if (data.routes[0].distance < 10000) {
+        await drawRouteBKK(startCoord, endCoord, "Public transit is recommended for medium distances.", 'transit');
       }
       else {
         await drawRouteDriving(startCoord, endCoord, "Driving route is recommended for longer distances.", 'driving');
       }
     }
-    else if(profile === 'walking' || profile === 'cycling') {
-      await drawRouteWalking(startCoord, endCoord, "", profile);
-    }
     else if(profile === 'driving') {
       await drawRouteDriving(startCoord, endCoord, "", profile);
     }
-    else if(profile === 'transit') {
-      await drawRoutePublicTransit(startCoord, endCoord, "", profile);
+    else {
+      await drawRouteBKK(startCoord, endCoord, "", profile);
     }
 
   } catch (error) {
@@ -123,14 +123,15 @@ export async function drawRouteDriving(startCoord, endCoord, recommendation, pro
   }));
 }
 
-export async function drawRoutePublicTransit(startCoord, endCoord, recommendation, profile) {
+export async function drawRouteBKK(startCoord, endCoord, recommendation, profile) {
   const apiKey = import.meta.env.VITE_BKK_API_KEY;
  
   const fromPlace = `::${startCoord[1]},${startCoord[0]}`;
   const toPlace = `::${endCoord[1]},${endCoord[0]}`;
+  const mode = profile === 'transit' ? 'TRANSIT,WALK' : 'WALK';
  
   const url = `https://futar.bkk.hu/api/query/v1/ws/otp/api/where/plan-trip` +
-  `?key=${apiKey}&version=4&mode=TRANSIT,WALK&numItineraries=1` +
+  `?key=${apiKey}&version=4&mode=${mode}&numItineraries=1` +
   `&fromPlace=${encodeURIComponent(fromPlace)}&toPlace=${encodeURIComponent(toPlace)}`;
  
   const response = await fetch(url);
