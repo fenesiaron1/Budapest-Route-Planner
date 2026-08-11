@@ -24,6 +24,7 @@ export const baseLayer = new TileLayer({
 
 export function setMapTheme(theme) {
   baseLayer.setSource(theme === 'dark' ? darkSource : osmSource);
+  walkingLegStyle.getStroke().setColor(theme === 'dark' ? '#FFFFFF' : '#000000');
 }
 
 export const map = new Map({
@@ -146,6 +147,17 @@ const trafficStyles = {
  
 export function getTrafficStyle(magnitudeOfDelay) {
   return trafficStyles[magnitudeOfDelay] || routeStyle;
+}
+
+const walkingLegStyle = new Style({
+  stroke: new Stroke({ color: '#000000', width: 4, lineDash: [2, 8] })
+});
+ 
+export function getTransitLegStyle(leg) {
+  if (!leg.routeColor) return walkingLegStyle;
+  return new Style({
+    stroke: new Stroke({ color: `#${leg.routeColor}`, width: 5 })
+  });
 }
 
 map.addLayer(markerLayer);
