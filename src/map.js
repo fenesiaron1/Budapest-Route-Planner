@@ -24,6 +24,7 @@ export const baseLayer = new TileLayer({
 
 export function setMapTheme(theme) {
   baseLayer.setSource(theme === 'dark' ? darkSource : osmSource);
+  walkingLegStyle.getStroke().setColor(theme === 'dark' ? '#FFFFFF' : '#000000');
 }
 
 export const map = new Map({
