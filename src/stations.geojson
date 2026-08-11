@@ -30,7 +30,7 @@
     },
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [19.0304, 47.4649] },
+      "geometry": { "type": "Point", "coordinates": [19.0206, 47.4643] },
       "properties": {
         "name": "Kelenföld vasútállomás",
         "type": "Railway station / Metro station (M4)",
