@@ -51,21 +51,66 @@
 
     <div id="controls">
       <button id="planBtn">Plan route</button>
+      <button id="panelVisibilityBtn">Panel</button>
       <button id="clearBtn">Clear</button>
     </div>
 
     <div id="panel">
+      <div class="profile-options">
+        <label class="profile-option">
+          <input type="radio" name="profile" value="walking" checked>
+          <span title="Walking">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="13.5" cy="4" r="1.8" fill="currentColor"/>
+              <path d="M10.5 8L13 7.5L16 9.5L18.5 12M13 7.5L11 12.5L7 15M11 12.5L14 14.5L13.5 19.5M14 14.5L18 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </label>
+        <label class="profile-option">
+          <input type="radio" name="profile" value="transit">
+          <span title="Transit">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="5.5" y="4" width="13" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M5.5 12H18.5M9 4V17M8 20L6 22M16 20L18 22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <circle cx="8.5" cy="14.5" r="0.9" fill="currentColor"/>
+              <circle cx="15.5" cy="14.5" r="0.9" fill="currentColor"/>
+            </svg>
+        </label>
+        <label class="profile-option">
+          <input type="radio" name="profile" value="driving">
+          <span title="Driving">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4.5 16V12L6.5 7.5H17.5L19.5 12V16" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              <path d="M3.5 16H20.5V18.5H18V16.5M6 18.5V16.5" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              <circle cx="7.5" cy="16" r="1.4" fill="currentColor"/>
+              <circle cx="16.5" cy="16" r="1.4" fill="currentColor"/>
+            </svg>
+        </label>
+      </div>
+      <div class="mode-caption">[<span id="transportMode"></span>]</div>
       <div id="routeRecommendation">Route recommendation</div>
-      <div>[<span id="transportMode"></span>]</div>
-      <div>Start: <span id="startCoord"></span></div>
-      <div>End: <span id="endCoord"></span></div>
-      <div>Distance: <span id="distance"></span></div>
-      <div>Time: <span id="duration"></span></div>
-      <select id="profile">
-        <option value="walking">Walking</option>
-        <option value="driving">Driving</option>
-        <option value="transit">Public transport</option>
-      </select>
+
+      <div class="stat-row">
+        <div class="stat">
+          <span class="stat-value" id="distance">—</span>
+          <span class="stat-label">Distance</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-value" id="duration">—</span>
+          <span class="stat-label">Time</span>
+        </div>
+      </div>
+
+      <div class="points">
+        <div class="point">
+          <span class="point-dot point-dot--start"></span>
+          <span class="point-text" id="startCoord"></span>
+        </div>
+        <div class="point">
+          <span class="point-dot point-dot--end"></span>
+          <span class="point-text" id="endCoord"></span>
+        </div>
+      </div>
     </div>
 
     <script type="module" src="./src/main.js"></script>
