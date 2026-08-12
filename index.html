@@ -55,17 +55,26 @@
     </div>
 
     <div id="panel">
+      <div class="profile-options">
+        <label class="profile-option">
+          <input type="radio" name="profile" value="walking" checked>
+          <span>Walking</span>
+        </label>
+        <label class="profile-option">
+          <input type="radio" name="profile" value="transit">
+          <span>Transit</span>
+        </label>
+        <label class="profile-option">
+          <input type="radio" name="profile" value="driving">
+          <span>Driving</span>
+        </label>
+      </div>
       <div id="routeRecommendation">Route recommendation</div>
       <div>[<span id="transportMode"></span>]</div>
       <div>Start: <span id="startCoord"></span></div>
       <div>End: <span id="endCoord"></span></div>
       <div>Distance: <span id="distance"></span></div>
       <div>Time: <span id="duration"></span></div>
-      <select id="profile">
-        <option value="walking">Walking</option>
-        <option value="driving">Driving</option>
-        <option value="transit">Public transport</option>
-      </select>
     </div>
 
     <script type="module" src="./src/main.js"></script>

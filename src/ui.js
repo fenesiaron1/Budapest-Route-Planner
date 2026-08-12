@@ -27,7 +27,14 @@ const controlsEl = document.getElementById('controls');
 const panelEl = document.getElementById('panel');
 const planBtn = document.getElementById('planBtn');
 const clearBtn = document.getElementById('clearBtn');
-const profileSelect = document.getElementById('profile');
+
+const profileRadios = document.querySelectorAll('input[name="profile"]');
+const profileLabels = { walking: 'Walking', driving: 'Driving', transit: 'Public transport' };
+function setSelectedProfile(value) {
+  const radio = document.querySelector(`input[name="profile"][value="${value}"]`);
+  if (radio) radio.checked = true;
+}
+
 const startCoordEl = document.getElementById('startCoord');
 const endCoordEl = document.getElementById('endCoord');
 const distanceEl = document.getElementById('distance');
@@ -91,8 +98,8 @@ routingEvents.addEventListener('routecalculated', (event) => {
     durationEl.textContent = Math.round(data.routes[0].duration / 60) + ' min';
     if(recommendation !== '')
       routeRecommendationEl.textContent = recommendation;
-    profileSelect.value = profile;
-    transportModeEl.textContent = profileSelect.options[profileSelect.selectedIndex].text;
+    setSelectedProfile(profile);
+    transportModeEl.textContent = profileLabels[profile] || profile;
     panelEl.classList.add('visible');
 });
 
@@ -158,11 +165,14 @@ clearBtn.addEventListener('click', function () {
   resetMarkers();
 });
 
-// Recalculates the route whenever the travel mode dropdown changes.
-profileSelect.addEventListener('change', function () {
-  if (currentSelectedMarker1 !== null && currentSelectedMarker2 !== null && !panelEl.classList.contains('hidden')) {
-    drawRoute(currentSelectedMarker1, currentSelectedMarker2, profileSelect.value);
-  }
+// Recalculates the route whenever a travel mode radio is selected.
+profileRadios.forEach(radio => {
+  radio.addEventListener('change', function () {
+    if (!this.checked) return;
+    if (currentSelectedMarker1 !== null && currentSelectedMarker2 !== null) {
+      drawRoute(currentSelectedMarker1, currentSelectedMarker2, this.value);
+    }
+  });
 });
 
 // Right-clicking a station marker shows its details in the side panel
