@@ -26,6 +26,7 @@ var placingType = null;
 const controlsEl = document.getElementById('controls');
 const panelEl = document.getElementById('panel');
 const planBtn = document.getElementById('planBtn');
+const panelVisibilityBtn = document.getElementById('panelVisibilityBtn');
 const clearBtn = document.getElementById('clearBtn');
 
 const profileRadios = document.querySelectorAll('input[name="profile"]');
@@ -158,6 +159,16 @@ map.on('pointermove', function (event) {
 planBtn.addEventListener('click', function () {
   if (currentSelectedMarker1 !== null && currentSelectedMarker2 !== null) {
     drawRoute(currentSelectedMarker1, currentSelectedMarker2, 'default');
+  }
+});
+
+panelVisibilityBtn.addEventListener('click', function () {
+  if(panelEl.classList.contains('visible')) {
+    panelEl.classList.remove('visible');
+  } else {
+    if(currentSelectedMarker1 !== null && currentSelectedMarker2 !== null && routeLayer.getSource().getFeatures().length > 0) {
+      panelEl.classList.add('visible');
+    }
   }
 });
 
